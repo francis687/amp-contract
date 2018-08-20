@@ -10,4 +10,10 @@ contract('AmplifyToken', function(accounts) {
     let name = await amplify_token.name()
     assert.equal(name, 'Amplify Token')
   })
+
+  it("should have the correct symbol", async () => {
+    let amplify_token = await AmplifyToken.deployed()
+    let symbol = await amplify_token.symbol()
+    assert.equal(symbol, 'AMPX')
+  })
 })

@@ -1,0 +1,28 @@
+{
+  "name": "amp-contract",
+  "version": "1.0.0",
+  "description": "Contract for AMPX token",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "truffle test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/SubstratumNetwork/amp-contract.git"
+  },
+  "keywords": [
+    "amplify",
+    "ampx",
+    "solidity",
+    "truffle"
+  ],
+  "author": "Substratum Services, Inc.",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SubstratumNetwork/amp-contract/issues"
+  },
+  "homepage": "https://github.com/SubstratumNetwork/amp-contract#readme"
+}

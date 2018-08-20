@@ -23,4 +23,10 @@ contract('AmplifyToken', function([owner]) {
     let decimals = await this.amplify_token.decimals()
     assert.equal(decimals, 18)
   })
+
+  it('should have the correct totalSupply', async () => {
+    let totalSupply = await this.amplify_token.totalSupply()
+    assert.equal(totalSupply, 1000000000000000000000000000)
+    assert.equal(totalSupply, 10**27)
+  })
 })

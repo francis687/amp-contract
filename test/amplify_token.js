@@ -2,67 +2,26 @@
 
 const assert = require('chai').assert
 
-const truffleAssert = require('truffle-assertions')
-const SolidityEvent = require('web3');
+const Web3 = require('web3')
+const web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545')
 
 const AmplifyToken = artifacts.require('AmplifyToken')
 
 const INITIAL_SUPPLY = 10**27
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 contract('AmplifyToken', function([owner]) {
   beforeEach( async () => {
     this.amplifyToken = await AmplifyToken.new({ from: owner })
-  })
-
-  it('should have the correct name', async () => {
-    let name = await this.amplifyToken.name()
-    assert.equal(name, 'Amplify Token')
-  })
-
-  it('should have the correct symbol', async () => {
-    let symbol = await this.amplifyToken.symbol()
-    assert.equal(symbol, 'AMPX')
-  })
-
-  it('should have the correct decimal level', async () => {
-    let decimals = await this.amplifyToken.decimals()
-    assert.equal(decimals, 18)
-  })
-
-  it('should have the correct totalSupply', async () => {
-    let totalSupply = await this.amplifyToken.totalSupply()
-    assert.equal(totalSupply, INITIAL_SUPPLY)
-  })
-
-  it('initially gives all tokens to the owner', async () => {
-    let ownerBalance = await this.amplifyToken.balanceOf(owner)
-    assert.equal(ownerBalance, INITIAL_SUPPLY)
+    this.ampContract = new web3.eth.Contract(this.amplifyToken.abi, this.amplifyToken.address)
   })
 
   it('emits an event for token creation', async () => {
-    truffleAssert.eventEmitted(this.amplifyToken, 'Transfer')
+    let events = await this.ampContract.getPastEvents('Transfer')
+    const eventArgs = events[0].returnValues
+
+    assert.equal(eventArgs.from.valueOf(), ZERO_ADDRESS)
+    assert.equal(eventArgs.to.valueOf().toLowerCase(), owner)
+    assert.equal(eventArgs.value.valueOf(), INITIAL_SUPPLY)
   })
-
-  it('assigns the initial total supply to the creator', async function () {
-    const totalSupply = await this.amplifyToken.totalSupply();
-    const creatorBalance = await this.amplifyToken.balanceOf(creator);
-
-    assert.equal(creatorBalance, totalSupply);
-
-    const receipt = await web3.eth.getTransactionReceipt(this.amplifyToken.transactionHash);
-    const logs = decodeLogs(receipt.logs, AmplifyToken, this.amplifyToken.address);
-    assert.equal(logs.length, 1);
-    assert.equal(logs[0].event, 'Transfer');
-    assert.equal(logs[0].args.from.valueOf(), 0x0);
-    assert.equal(logs[0].args.to.valueOf(), creator);
-    assert(logs[0].args.value.eq(totalSupply));
-  });
-
-  function decodeLogs (logs, contract, address) {
-    return logs.map(log => {
-      const event = new SolidityEvent(null, contract.events[log.topics[0]], address);
-      return event.decode(log);
-    });
-  }
-
 })

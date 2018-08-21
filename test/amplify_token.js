@@ -7,11 +7,11 @@ const web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545')
 
 const AmplifyToken = artifacts.require('AmplifyToken')
 
-const INITIAL_SUPPLY = 10**27
+const INITIAL_SUPPLY = 10 ** 27
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
-contract('AmplifyToken', function([owner]) {
-  beforeEach( async () => {
+contract('AmplifyToken', ([owner]) => {
+  beforeEach(async () => {
     this.amplifyToken = await AmplifyToken.new({ from: owner })
     this.ampContract = new web3.eth.Contract(this.amplifyToken.abi, this.amplifyToken.address)
   })

@@ -10,11 +10,11 @@ const expect = chai.expect
 
 const AmplifyToken = artifacts.require('AmplifyToken')
 
-const INITIAL_SUPPLY = new BigNumber('1e27')
+const INITIAL_SUPPLY = 10 ** 27
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
-contract('AmplifyToken', function([owner]) {
-  beforeEach( async () => {
+contract('AmplifyToken', ([owner]) => {
+  beforeEach(async () => {
     this.amplifyToken = await AmplifyToken.new({ from: owner })
     this.amplifyWeb3Contract = new newWeb3.eth.Contract(this.amplifyToken.abi, this.amplifyToken.address)
   })

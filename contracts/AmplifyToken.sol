@@ -1,8 +1,9 @@
 pragma solidity ^0.4.22;
 
 import "openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/StandardBurnableToken.sol";
 
-contract AmplifyToken is StandardToken {
+contract AmplifyToken is StandardBurnableToken {
     string public constant name = "Amplify Token";
     string public constant symbol = "AMPX";
     uint8 public constant decimals = 18;

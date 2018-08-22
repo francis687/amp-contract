@@ -1,9 +1,12 @@
 /* global require, artifacts, contract, beforeEach, it */
 
-const assert = require('chai').assert
-
+const BigNumber = web3.BigNumber
 const Web3 = require('web3')
-const web3 = new Web3(Web3.givenProvider || 'ws://localhost:8545')
+const newWeb3 = new Web3(Web3.givenProvider || 'ws://localhost:8545')
+
+const chai = require('chai')
+chai.use(require('chai-bignumber')(BigNumber))
+const expect = chai.expect
 
 const AmplifyToken = artifacts.require('AmplifyToken')
 
@@ -13,15 +16,22 @@ const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 contract('AmplifyToken', ([owner]) => {
   beforeEach(async () => {
     this.amplifyToken = await AmplifyToken.new({ from: owner })
-    this.ampContract = new web3.eth.Contract(this.amplifyToken.abi, this.amplifyToken.address)
+    this.amplifyWeb3Contract = new newWeb3.eth.Contract(this.amplifyToken.abi, this.amplifyToken.address)
   })
 
   it('emits an event for token creation', async () => {
-    let events = await this.ampContract.getPastEvents('Transfer')
+    let events = await this.amplifyWeb3Contract.getPastEvents('Transfer')
     const eventArgs = events[0].returnValues
 
-    assert.equal(eventArgs.from.valueOf(), ZERO_ADDRESS)
-    assert.equal(eventArgs.to.valueOf().toLowerCase(), owner)
-    assert.equal(eventArgs.value.valueOf(), INITIAL_SUPPLY)
+    expect(eventArgs.from.valueOf()).to.equal(ZERO_ADDRESS)
+    expect(eventArgs.to.valueOf().toLowerCase()).to.equal(owner)
+    expect(eventArgs.value).to.be.bignumber.equal(INITIAL_SUPPLY)
+  })
+
+  it('is burnable', async () => {
+    this.amplifyToken.burn(10 ** 26 + 1)
+
+    expect(await this.amplifyToken.balanceOf(owner)).to.be.bignumber.equal('9e26')
+    expect(await this.amplifyToken.totalSupply()).to.be.bignumber.equal('9e26')
   })
 })

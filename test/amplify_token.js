@@ -1,4 +1,4 @@
-/* global require, artifacts, contract, beforeEach, it */
+/* global web3, require, artifacts, contract, beforeEach, it */
 
 const BigNumber = web3.BigNumber
 const Web3 = require('web3')

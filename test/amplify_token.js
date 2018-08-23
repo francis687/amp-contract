@@ -125,7 +125,13 @@ contract('AmplifyToken', ([owner, otherAccount]) => {
     })
 
     it('allows transfers from any account', async () => {
+      const transferAmount = new BigNumber('1e24')
+      const expectedOtherBalance = new BigNumber('99e25')
 
+      await subject.transfer(owner, transferAmount, { from: otherAccount })
+
+      expect(await subject.balanceOf(otherAccount)).to.be.bignumber.equal(expectedOtherBalance)
+      expect(await subject.balanceOf(owner)).to.be.bignumber.equal('9e24')
     })
   })
 })

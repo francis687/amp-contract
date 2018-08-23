@@ -1,8 +1,8 @@
 pragma solidity ^0.4.22;
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
-import "openzeppelin-solidity/contracts/token/ERC20/StandardBurnableToken.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/BasicToken.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/StandardBurnableToken.sol";
 
 contract AmplifyToken is StandardBurnableToken, Ownable {
     string public constant name = "AMPX";

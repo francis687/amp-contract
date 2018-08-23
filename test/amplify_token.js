@@ -133,5 +133,9 @@ contract('AmplifyToken', ([owner, otherAccount]) => {
       expect(await subject.balanceOf(otherAccount)).to.be.bignumber.equal(expectedOtherBalance)
       expect(await subject.balanceOf(owner)).to.be.bignumber.equal('9e24')
     })
+
+    it('does not allow transferring more than the balance', async () => {
+      expect(await reverted(subject.transfer(owner, 1, { from: otherAccount })))
+    })
   })
 })

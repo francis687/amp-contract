@@ -26,8 +26,7 @@ contract('AmplifyToken', ([owner, otherAccount]) => {
   before(async () => {
     let now = Math.floor(new Date().getTime() / 1000)
     let crowdsaleEnd = now + SECONDS_IN_A_WEEK
-    console.log(crowdsaleEnd)
-    subject = await AmplifyToken.new({ from: owner })
+    subject = await AmplifyToken.new(crowdsaleEnd, { from: owner })
     amplifyNewWeb3 = new newWeb3.eth.Contract(subject.abi, subject.address)
   })
 
@@ -41,9 +40,9 @@ contract('AmplifyToken', ([owner, otherAccount]) => {
   })
 
   it('cannot burn more than owner has', async () => {
-    subject.transfer(otherAccount, new BigNumber('99e25'))
-    const expectedOwnerAmount = (new BigNumber('1e25'))
-    const amountToBurn = (new BigNumber('1e26')) // more than owner has, less than totalSupply
+    await subject.transfer(otherAccount, new BigNumber('99e25'))
+    const expectedOwnerAmount = new BigNumber('1e25')
+    const amountToBurn = new BigNumber('1e26') // more than owner has, less than totalSupply
 
     assertRevert(subject.burn(amountToBurn))
 
@@ -75,12 +74,19 @@ contract('AmplifyToken', ([owner, otherAccount]) => {
   })
 
   describe('transfers', () => {
-    it('allows transfers from the owner', async () => {
+    const transferAmount = new BigNumber('1e24')
 
+    it('allows transfers from the owner', async () => {
+      const expectedOtherBalance = new BigNumber('99e25').plus(transferAmount)
+
+      await subject.transfer(otherAccount, transferAmount)
+
+      expect(await subject.balanceOf(owner)).to.be.bignumber.equal('8e24')
+      expect(await subject.balanceOf(otherAccount)).to.be.bignumber.equal(expectedOtherBalance)
     })
 
     it('disallows transfers from non-owner before the crowdsale end', async () => {
-
+      assertRevert(subject.transfer(owner, 13, { from: otherAccount }))
     })
 
     it('allows transfers after the crowdsale end', async () => {

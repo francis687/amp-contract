@@ -17,7 +17,7 @@ const AmplifyToken = artifacts.require('AmplifyToken')
 const INITIAL_WEI_SUPPLY = 10 ** 27
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
-contract('AmplifyToken', ([owner, otherAccount]) => {
+contract('AmplifyToken', ([owner, otherAccount, buyer, seller]) => {
   let subject
   let amplifyNewWeb3
 
@@ -136,6 +136,42 @@ contract('AmplifyToken', ([owner, otherAccount]) => {
 
     it('does not allow transferring more than the balance', async () => {
       expect(await reverted(subject.transfer(owner, 1, { from: otherAccount })))
+    })
+  })
+
+  describe('transfer from', () => {
+    it('can transfer approved funds', async () => {
+      let initialOwnerBalance = await subject.balanceOf(owner)
+      await subject.approve(buyer, 10000)
+      await subject.transferFrom(owner, seller, 10000, {from: buyer})
+
+      expect(await subject.balanceOf(seller)).to.be.bignumber.equal(10000)
+      expect(await subject.balanceOf(owner)).to.be.bignumber.equal(initialOwnerBalance.minus(10000))
+    })
+
+    it('can transfer approved funds in chunks', async () => {
+      let initialOwnerBalance = await subject.balanceOf(owner)
+      await subject.approve(buyer, 10000)
+      await subject.transferFrom(owner, seller, 4000, {from: buyer})
+      await subject.transferFrom(owner, seller, 6000, {from: buyer})
+
+      expect(await subject.balanceOf(seller)).to.be.bignumber.equal(20000)
+      expect(await subject.balanceOf(owner)).to.be.bignumber.equal(initialOwnerBalance.minus(10000))
+    })
+
+    it('can not transfer funds that have not been approved', async () => {
+      expect(await reverted(subject.transferFrom(owner, seller, 20000, {from: buyer}))).to.equal(true)
+    })
+
+    it('can not do the transfer if not enough has been approved', async () => {
+      await subject.approve(buyer, 10000)
+      expect(await reverted(subject.transferFrom(owner, seller, 200000, {from: buyer}))).to.equal(true)
+    })
+
+    it('can not transfer approved funds if balance is too low', async () => {
+      let excessiveAmount = (await subject.balanceOf(owner)).plus(1)
+      await subject.approve(buyer, excessiveAmount)
+      expect(await reverted(subject.transferFrom(owner, seller, excessiveAmount, {from: buyer}))).to.equal(true)
     })
   })
 })

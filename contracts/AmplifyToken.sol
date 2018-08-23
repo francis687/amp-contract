@@ -11,7 +11,7 @@ contract AmplifyToken is StandardBurnableToken, Ownable {
     bool public crowdsaleActive = true;
 
     // Number of coins (1 billion) * decimal places (18)
-    uint256 public constant INITIAL_SUPPLY = (10 ** 9) * (10 ** uint256(decimals));
+    uint256 public constant INITIAL_SUPPLY = 1000000000000000000000000000;
 
 
     constructor() public {

@@ -64,18 +64,22 @@ contract('AMPX', ([owner, otherAccount, buyer, seller]) => {
 
   describe('token burn', () => {
     it('cannot burn more than owner has', async () => {
-      subject.transfer(otherAccount, new BigNumber('99e25'))
-      const expectedOwnerAmount = (new BigNumber('1e25'))
-      const amountToBurn = (new BigNumber('1e26')) // more than owner has, less than totalSupply
+      const initialOwnerAmount = await subject.balanceOf(owner)
+      const transferAmount = initialOwnerAmount.dividedBy(2)
+      await subject.transfer(otherAccount, transferAmount)
+      const expectedOwnerAmount = await subject.balanceOf(owner)
+      const amountToBurn = initialOwnerAmount.plus(1)
 
       expect(await reverted(subject.burn(amountToBurn))).to.be.true()
 
       expect(await subject.balanceOf(owner)).to.be.bignumber.equal(expectedOwnerAmount)
-      expect(await subject.totalSupply()).to.be.bignumber.equal('1e27')
+      expect(await subject.totalSupply()).to.be.bignumber.equal(INITIAL_WEI_SUPPLY)
     })
 
-    it('is burnable', async () => {
-      const burntAmount = new BigNumber('1e24')
+    it('can burn an amount that owner has', async () => {
+      const initialTotalSupply = await subject.totalSupply()
+      const initialOwnerAmount = await subject.balanceOf(owner)
+      const burntAmount = 750
       const tx = await subject.burn(burntAmount)
 
       truffleAssert.eventEmitted(tx, 'Burn', event => {
@@ -89,8 +93,8 @@ contract('AMPX', ([owner, otherAccount, buyer, seller]) => {
           event.value.eq(burntAmount)
       })
 
-      expect(await subject.balanceOf(owner)).to.be.bignumber.equal('9e24')
-      expect(await subject.totalSupply()).to.be.bignumber.equal('999e24')
+      expect(await subject.balanceOf(owner)).to.be.bignumber.equal(initialOwnerAmount.minus(burntAmount))
+      expect(await subject.totalSupply()).to.be.bignumber.equal(initialTotalSupply.minus(burntAmount))
     })
   })
 
@@ -105,13 +109,14 @@ contract('AMPX', ([owner, otherAccount, buyer, seller]) => {
     })
 
     it('allows the owner to transfer funds', async () => {
-      const transferAmount = new BigNumber('1e24')
-      const expectedOtherBalance = new BigNumber('99e25').plus(transferAmount)
+      const initialOwnerAmount = await subject.balanceOf(owner)
+      const initialOtherAmount = await subject.balanceOf(otherAccount)
+      const transferAmount = 1337
 
       await subject.transfer(otherAccount, transferAmount)
 
-      expect(await subject.balanceOf(owner)).to.be.bignumber.equal('8e24')
-      expect(await subject.balanceOf(otherAccount)).to.be.bignumber.equal(expectedOtherBalance)
+      expect(await subject.balanceOf(owner)).to.be.bignumber.equal(initialOwnerAmount.minus(transferAmount))
+      expect(await subject.balanceOf(otherAccount)).to.be.bignumber.equal(initialOtherAmount.plus(transferAmount))
     })
 
     it('does not allow non owners to transfer funds', async () => {

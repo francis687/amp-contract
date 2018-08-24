@@ -7,7 +7,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "truffle test"
+    "test": "truffle test",
+    "lint": "standard --fix"
   },
   "repository": {
     "type": "git",
@@ -24,5 +25,18 @@
   "bugs": {
     "url": "https://github.com/SubstratumNetwork/amp-contract/issues"
   },
-  "homepage": "https://github.com/SubstratumNetwork/amp-contract#readme"
+  "homepage": "https://github.com/SubstratumNetwork/amp-contract#readme",
+  "devDependencies": {
+    "bignumber.js": "^7.2.1",
+    "chai": "^4.1.2",
+    "chai-bignumber": "^2.0.2",
+    "dirty-chai": "^2.0.1",
+    "standard": "^11.0.1",
+    "truffle-assertions": "^0.3.1",
+    "web3": "^1.0.0-beta.35",
+    "web3-utils": "^1.0.0-beta.35"
+  },
+  "dependencies": {
+    "openzeppelin-solidity": "1.12.0"
+  }
 }

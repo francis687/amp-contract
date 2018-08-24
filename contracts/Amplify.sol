@@ -5,8 +5,8 @@ import "openzeppelin-solidity/contracts/token/ERC20/BasicToken.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/StandardBurnableToken.sol";
 
-contract AMPX is StandardBurnableToken, Ownable {
-    string public constant name = "AMPX";
+contract Amplify is StandardBurnableToken, Ownable {
+    string public constant name = "Amplify";
     string public constant symbol = "AMPX";
     uint8 public constant decimals = 18;
     bool public crowdsaleActive = true;

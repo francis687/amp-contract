@@ -1,7 +1,7 @@
 /* global artifacts */
 
-let AMPX = artifacts.require('./AMPX.sol')
+let Amplify = artifacts.require('./Amplify.sol')
 
 module.exports = function (deployer, network, accounts) {
-  deployer.deploy(AMPX)
+  deployer.deploy(Amplify)
 }

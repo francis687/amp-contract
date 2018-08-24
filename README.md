@@ -4,5 +4,18 @@ Amplify Contract
 Getting Started
 ---------------
 
-`npm install`
-`npm test`
+to run everything:
+
+`ci/all.sh`
+
+to install dependencies:
+
+`ci/setup.sh`
+
+to lint:
+
+`ci/lint.sh`
+
+to run the tests:
+
+`ci/test.sh`

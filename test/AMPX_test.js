@@ -13,17 +13,17 @@ const truffleAssert = require('truffle-assertions')
 const reverted = require('./helpers/reverted')
 const toWei = require('./helpers/toWei')
 
-const AmplifyToken = artifacts.require('AmplifyToken')
+const AMPX = artifacts.require('AMPX')
 
 const INITIAL_WEI_SUPPLY = 10 ** 27
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
-contract('AmplifyToken', ([owner, otherAccount, buyer, seller]) => {
+contract('AMPX', ([owner, otherAccount, buyer, seller]) => {
   let subject
   let amplifyNewWeb3
 
   before(async () => {
-    subject = await AmplifyToken.new({ from: owner })
+    subject = await AMPX.new({ from: owner })
     amplifyNewWeb3 = new newWeb3.eth.Contract(subject.abi, subject.address)
   })
 

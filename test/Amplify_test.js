@@ -15,7 +15,7 @@ const toWei = require('./helpers/toWei')
 
 const Amplify = artifacts.require('Amplify')
 
-const INITIAL_WEI_SUPPLY = 10 ** 27
+const INITIAL_WEI_SUPPLY = new BigNumber('12e26')
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 contract('Amplify', ([owner, otherAccount, buyer, seller]) => {
@@ -40,12 +40,12 @@ contract('Amplify', ([owner, otherAccount, buyer, seller]) => {
       expect((await subject.decimals()).toNumber()).to.equal(18)
     })
 
-    it('starts with a total supply of 1 billion', async () => {
-      expect(await subject.totalSupply()).to.be.bignumber.equal(toWei('1e9'))
+    it('starts with a total supply of 1.2 billion', async () => {
+      expect(await subject.totalSupply()).to.be.bignumber.equal(toWei('12e8'))
     })
 
-    it('starts with owner balance at 1 billion', async () => {
-      expect(await subject.balanceOf(owner)).to.be.bignumber.equal(toWei('1e9'))
+    it('starts with owner balance at 1.2 billion', async () => {
+      expect(await subject.balanceOf(owner)).to.be.bignumber.equal(toWei('12e8'))
     })
 
     it('emits an event for token creation', async () => {

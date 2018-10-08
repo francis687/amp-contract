@@ -11,8 +11,8 @@ contract Amplify is StandardBurnableToken, Ownable {
     uint8 public constant decimals = 18;
     bool public crowdsaleActive = true;
 
-    // 1 billion tokens * decimal places (10^18)
-    uint256 public constant INITIAL_SUPPLY = 1000000000000000000000000000;
+    // 1.2 billion tokens * decimal places (10^18)
+    uint256 public constant INITIAL_SUPPLY = 1200000000000000000000000000;
 
 
     constructor() public {

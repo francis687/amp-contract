@@ -1,4 +1,4 @@
-pragma solidity ^0.4.22;
+pragma solidity 0.4.24;
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/BasicToken.sol";
@@ -13,7 +13,6 @@ contract Amplify is StandardBurnableToken, Ownable {
 
     // 1.2 billion tokens * decimal places (10^18)
     uint256 public constant INITIAL_SUPPLY = 1200000000000000000000000000;
-
 
     constructor() public {
         totalSupply_ = INITIAL_SUPPLY;

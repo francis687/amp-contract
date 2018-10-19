@@ -126,8 +126,6 @@ contract('Amplify', ([owner, otherAccount, buyer, seller]) => {
 
   describe('transferFrom during crowdsale', () => {
     it('allows owner to transfer approved funds', async () => {
-      expect(await subject.allowance(owner, otherAccount)).to.be.bignumber.equal(0)
-
       let initialOtherBalance = await subject.balanceOf(otherAccount)
 
       await subject.approve(owner, 10000, { from: otherAccount })
@@ -139,8 +137,6 @@ contract('Amplify', ([owner, otherAccount, buyer, seller]) => {
 
     it('allows owner to transfer approved funds in chunks', async () => {
       let initialOtherBalance = await subject.balanceOf(otherAccount)
-      expect(await subject.allowance(owner, otherAccount)).to.be.bignumber.equal(0)
-
       await subject.approve(owner, 10000, { from: otherAccount })
       await subject.transferFrom(otherAccount, seller, 4000, { from: owner })
       await subject.transferFrom(otherAccount, seller, 6000, { from: owner })
@@ -150,36 +146,22 @@ contract('Amplify', ([owner, otherAccount, buyer, seller]) => {
     })
 
     it('does not allow owner to transfer funds that have not been approved', async () => {
-      expect(await subject.allowance(owner, otherAccount)).to.be.bignumber.equal(0)
       expect(await reverted(subject.transferFrom(otherAccount, seller, 20000, { from: owner }))).to.be.true()
     })
 
     it('does not allow owner to transfer if not enough has been approved', async () => {
-      expect(await subject.allowance(owner, otherAccount)).to.be.bignumber.equal(0)
-
       await subject.approve(owner, 10000, { from: otherAccount })
 
       expect(await reverted(subject.transferFrom(otherAccount, seller, 200000, { from: owner }))).to.be.true()
     })
 
     it('does not allow owner to transfer approved funds if balance is too low', async () => {
-      await subject.approve(owner, 0, { from: otherAccount })
-
-      expect(await subject.allowance(otherAccount, owner)).to.be.bignumber.equal(0)
-      expect(await subject.allowance(owner, otherAccount)).to.be.bignumber.equal(0)
-
-      let balance = await subject.balanceOf(otherAccount)
-
-      await subject.approve(owner, balance, { from: otherAccount })
-
-      await subject.transfer(buyer, balance / 2, { from: owner })
-
-      expect(await reverted(subject.transferFrom(otherAccount, seller, balance, { from: owner }))).to.be.false()
+      let excessiveAmount = (await subject.balanceOf(otherAccount)).plus(1)
+      await subject.approve(owner, excessiveAmount, { from: otherAccount })
+      expect(await reverted(subject.transferFrom(otherAccount, seller, excessiveAmount, { from: owner }))).to.be.true()
     })
 
     it('does not allow non owners to transfer funds', async () => {
-      expect(await subject.allowance(owner, otherAccount)).to.be.bignumber.equal(0)
-
       await subject.approve(otherAccount, 10, { from: owner })
 
       expect(await reverted(subject.transferFrom(owner, seller, 10, { from: otherAccount }))).to.be.true()
@@ -198,8 +180,6 @@ contract('Amplify', ([owner, otherAccount, buyer, seller]) => {
       const initialOtherAmount = await subject.balanceOf(otherAccount)
       const transferAmount = 600
 
-      expect(initialOtherAmount >= transferAmount)
-
       await subject.transfer(owner, transferAmount, { from: otherAccount })
 
       expect(await subject.balanceOf(otherAccount)).to.be.bignumber.equal(initialOtherAmount.minus(transferAmount))
@@ -216,10 +196,7 @@ contract('Amplify', ([owner, otherAccount, buyer, seller]) => {
       const initialOwnerBalance = await subject.balanceOf(owner)
       const initialSellerBalance = await subject.balanceOf(seller)
       const transferAmount = 10000
-
-      expect(await subject.allowance(owner, seller)).to.be.bignumber.equal(0)
-
-      await subject.approve(buyer, transferAmount, { from: owner })
+      await subject.approve(buyer, transferAmount)
       await subject.transferFrom(owner, seller, transferAmount, { from: buyer })
 
       expect(await subject.balanceOf(seller)).to.be.bignumber.equal(initialSellerBalance.plus(transferAmount))
@@ -244,37 +221,15 @@ contract('Amplify', ([owner, otherAccount, buyer, seller]) => {
     })
 
     it('can not do the transfer if not enough has been approved', async () => {
-      expect(await subject.allowance(owner, buyer)).to.be.bignumber.equal(0)
-
       await subject.approve(buyer, 10000, { from: owner })
 
       expect(await reverted(subject.transferFrom(owner, seller, 200000, { from: buyer }))).to.be.true()
     })
 
     it('can not transfer approved funds if balance is too low', async () => {
-      await subject.approve(buyer, 0, { from: owner })
-      expect(await subject.allowance(owner, buyer)).to.be.bignumber.equal(0)
-
-      let balance = (await subject.balanceOf(owner))
-
-      await subject.approve(buyer, balance, { from: owner })
-
-      await subject.transferFrom(owner, seller, balance / 2, { from: buyer })
-
-      expect(await reverted(subject.transferFrom(owner, seller, balance, { from: buyer }))).to.be.true()
-    })
-
-    it('reverts 2nd non-zero approve calls to prevent double-spend race condition', async () => {
-      await subject.approve(buyer, 0, { from: owner })
-
-      expect(await subject.allowance(owner, buyer)).to.be.bignumber.equal(0)
-
-      let approvedAmount = 10000
-
-      await subject.approve(buyer, approvedAmount, { from: owner })
-
-      expect(await reverted(subject.approve(buyer, approvedAmount + 10000, { from: owner }))).to.be.true()
-      expect(await subject.allowance(owner, buyer)).to.be.bignumber.equal(approvedAmount)
+      let excessiveAmount = (await subject.balanceOf(owner)).plus(1)
+      await subject.approve(buyer, excessiveAmount, { from: owner })
+      expect(await reverted(subject.transferFrom(owner, seller, excessiveAmount, { from: buyer }))).to.be.true()
     })
   })
 })

@@ -36,12 +36,6 @@ contract Amplify is StandardBurnableToken, Ownable {
         return BasicToken.transfer(_to, _value);
     }
 
-    function approve(address _spender, uint256 _value) public returns (bool) {
-        require(_value == 0 || allowed[msg.sender][_spender] == 0, "Use increaseAllowance or decreaseAllowance to prevent double-spend");
-
-        return StandardToken.approve(_spender, _value);
-    }
-
     function transferFrom(address _from, address _to, uint256 _value) public afterCrowdsale returns (bool) {
         return StandardToken.transferFrom(_from, _to, _value);
     }

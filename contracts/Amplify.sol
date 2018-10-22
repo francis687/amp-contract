@@ -23,17 +23,23 @@ contract Amplify is StandardBurnableToken, Ownable {
     modifier afterCrowdsale {
         require(
             msg.sender == owner || !crowdsaleActive,
-            "Transfers are not allowed until after the crowdsale."
+              "Transfers are not allowed until after the crowdsale."
         );
         _;
     }
 
-    function endCrowdsale () public onlyOwner {
+    function endCrowdsale() public onlyOwner {
         crowdsaleActive = false;
     }
 
     function transfer(address _to, uint256 _value) public afterCrowdsale returns (bool) {
         return BasicToken.transfer(_to, _value);
+    }
+
+    function approve(address _spender, uint256 _value) public returns (bool) {
+        require(_value == 0 || allowed[msg.sender][_spender] == 0, "Use increaseApproval or decreaseApproval to prevent double-spend.");
+
+        return StandardToken.approve(_spender, _value);
     }
 
     function transferFrom(address _from, address _to, uint256 _value) public afterCrowdsale returns (bool) {

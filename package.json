@@ -9,7 +9,7 @@
   "scripts": {
     "test": "truffle test",
     "lint": "standard --fix",
-    "flatten": "truffle-flattener contracts/Amplify.sol > contracts/flat-amp.sol"
+    "flatten": "truffle-flattener contracts/Amplify.sol > build/flat-amp.sol"
   },
   "repository": {
     "type": "git",
@@ -40,6 +40,7 @@
     "web3-utils": "^1.0.0-beta.36"
   },
   "dependencies": {
-    "openzeppelin-solidity": "1.12.0"
+    "openzeppelin-solidity": "1.12.0",
+    "truffle-hdwallet-provider": "0.0.6"
   }
 }
